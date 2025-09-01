@@ -1,0 +1,127 @@
+# SEMOTrack It! (New Shuttle Bus App)
+
+## Description
+SEMOTrackIt! is a campus shuttle tracking application designed for Southeast Missouri State University (SEMO) students, faculty, and staff. It provides real-time updates on shuttle locations, estimated arrival times, and route information to help users plan commutes efficiently. The app reduces uncertainty, saves time, and improves accessibility for traveling to classes, residence halls, or around town. It features an intuitive interface with clear route visualization.
+
+This project is developed as part of CS445 Software Engineering I, following the Software Development Life Cycle (SDLC). The app can be built as a desktop, mobile, or web application using any programming language (e.g., Java, C++, C#, JavaScript), ensuring it runs as a working prototype free of viruses/malware.
+
+## Team Members
+- Andrew Pauk
+- Nolan Blenniss
+- Owen Andrew Stevens
+- Ryan Croak
+- Colin Beers
+
+## Features and Requirements
+Based on the project deliverables outlined in the CS445 Project Manual, the app must include:
+
+### Functional Requirements
+- Real-time shuttle location tracking.
+- Estimated arrival times at stops.
+- Route information and visualization (e.g., maps or diagrams).
+- User authentication (e.g., login for personalized features).
+- Notifications for delays or arrivals.
+
+### Non-Functional Requirements
+- Intuitive user interface for easy navigation.
+- Reliable performance with low latency for real-time updates.
+- Accessibility features (e.g., screen reader compatibility).
+- Scalable to handle multiple users.
+- Secure data handling (e.g., user privacy).
+
+### Data Dictionary
+- **Shuttle**: Entity with attributes like ID, current location (latitude/longitude), speed, route ID.
+- **Route**: Entity with attributes like ID, stops (list of locations), schedule.
+- **User**: Entity with attributes like ID, name, role (student/faculty/staff), preferences.
+- **Stop**: Entity with attributes like ID, name, location, estimated arrival time.
+
+### User Interface (UI) Design
+- Initial mockups: Home screen with map view, shuttle list, search bar for routes/stops.
+- Complete UI: Interactive maps, real-time updates, user profile page.
+
+### Use Case Model
+#### Use Case Diagram
+(Reference: image1.jpeg - A UML diagram showing actors (e.g., Student, Driver) and use cases like "Track Shuttle", "View Routes", "Receive Notifications".)
+
+#### Sample Use Case Descriptions
+Using the provided Use Case Template:
+
+**Use Case ID:** 1.1  
+**Use Case Name:** Track Shuttle Location  
+**Created By:** Team  
+**Date Created:** [Insert Date]  
+**Last Updated By:** Team  
+**Date Last Updated:** [Insert Date]  
+
+**Actor:** Student/Faculty/Staff  
+**Description:** User views real-time location of a selected shuttle.  
+**Preconditions:**  
+1. User is logged in.  
+2. App has access to GPS data.  
+**Postconditions:**  
+1. Current shuttle position displayed on map.  
+**Priority:** High  
+**Frequency of Use:** Multiple times per day.  
+**Flow of Events:**  
+1. User selects a shuttle or route.  
+2. System fetches real-time GPS data.  
+3. System displays location on map with ETA.  
+**Alternative Flows:**  
+1.1.AC.1: If no shuttles are active, display message "No shuttles currently running."  
+**Exceptions:**  
+1.1.EX.1: If GPS data fails, show error and fallback to last known location.  
+**Includes:** None  
+**Special Requirements:** Real-time updates every 10 seconds.  
+**Assumptions:** Internet connection available.  
+**Notes and Issues:** Integrate with a mapping API (e.g., Google Maps or OpenStreetMap).
+
+(Additional use cases: View Routes, Receive Notifications, Update User Preferences - Expand similarly based on diagram.)
+
+### Class Diagram
+- Entity Classes: Shuttle, Route, Stop, User.
+- Boundary Classes: MapView, NotificationService.
+- Control Classes: TrackerController, RouteManager.
+- Relationships: Shuttle aggregates Stops; User interacts with Routes.
+
+### Dynamic Model
+- Sequence Diagrams: For at least 4 main use cases (e.g., tracking sequence: User -> Controller -> GPS Service -> MapView).
+- State-Chart Diagram: Shuttle states (Idle, In Transit, Arrived).
+
+### System Architecture
+- Client-Server model: Frontend (UI), Backend (real-time data processing), Database (routes/shuttles).
+- Potential tech stack: React/Node.js for web, or Java for desktop/mobile.
+
+### Test Cases
+- Black Box: Input validation for user search, expected output for ETA calculations.
+- White Box: Code coverage for tracking logic paths.
+
+## Installation
+1. Clone the repository: `git clone [repo-url]`.
+2. Install dependencies: (e.g., `npm install` for Node.js-based app).
+3. Set up environment: Configure API keys for mapping services.
+4. Build: (e.g., `npm run build`).
+
+## Usage
+1. Run the app: (e.g., `npm start`).
+2. Login as a user.
+3. Select a route or shuttle to track.
+4. View real-time updates on the map.
+
+## Development Plan
+Follow PD1-PD5 from CS445 Manual:
+- PD1: Requirements and initial models.
+- PD2: Analysis with diagrams.
+- PD3: Design and skeleton code.
+- PD4: Implementation and testing.
+- PD5: Final prototype and demo.
+
+## Technologies
+- Programming Language: [To be chosen, e.g., JavaScript].
+- Libraries: Mapping (e.g., Leaflet), Real-time (e.g., Socket.io).
+- Tools: VS Code for development, Git for version control.
+
+## Contributors
+See team members above. Contributions welcome via pull requests.
+
+## License
+MIT License - Free to use and modify for educational purposes.
