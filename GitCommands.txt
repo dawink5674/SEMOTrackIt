@@ -1,4 +1,5 @@
 # Git Commands to Add, Commit, and Push to Main Branch
+# gh auth login -> Github.com -> HTTPS -> Yes -> Login with web -> enter in one-time code
 
 1. Stage your changes:
    git add .
