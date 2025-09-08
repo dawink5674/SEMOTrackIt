@@ -4,13 +4,14 @@ import { getDatabase, ref, onValue, set, push } from 'firebase/database';
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "your-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  databaseURL: "https://your-project-default-rtdb.firebaseio.com",
-  projectId: "your-project",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id"
+  apiKey: "AIzaSyByIcBoFAxaCedcmt8t9wTLkb9Pd4euMKI",
+  authDomain: "semotrack-it.firebaseapp.com",
+  databaseURL: "https://semotrack-it-default-rtdb.firebaseio.com",
+  projectId: "semotrack-it",
+  storageBucket: "semotrack-it.firebasestorage.app",
+  messagingSenderId: "116848776295",
+  appId: "1:116848776295:web:a89e1a89312262026af0c2",
+  measurementId: "G-Y57X0Q4H5D"
 };
 
 // Initialize Firebase

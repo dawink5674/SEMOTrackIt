@@ -1,5 +1,5 @@
 import React from 'react';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import { View, StyleSheet } from 'react-native';
 
 const MapComponent = ({ shuttles }) => {
@@ -7,7 +7,6 @@ const MapComponent = ({ shuttles }) => {
     <View style={styles.container}>
       <MapView
         style={styles.map}
-        provider={PROVIDER_GOOGLE}
         initialRegion={{
           latitude: 37.0902, // SEMO approximate location
           longitude: -89.2186,

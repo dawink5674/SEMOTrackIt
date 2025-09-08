@@ -1,0 +1,16 @@
+# Git Commands to Add, Commit, and Push to Main Branch
+
+1. Stage your changes:
+   git add .
+
+2. Commit your changes (replace "Your message" with a description):
+   git commit -m "Your message"
+
+3. Push to the main branch:
+   git push origin main
+
+# Notes:
+- Run these from the project root in your WSL terminal.
+- If the branch is not 'main', replace with your branch name (e.g., 'master').
+- If pushing for the first time, you may need to set upstream: git push -u origin main.
+- Use a GitHub Personal Access Token (PAT) for authentication if prompted.
