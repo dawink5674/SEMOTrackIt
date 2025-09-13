@@ -4,7 +4,7 @@ import { View, StyleSheet, Text } from 'react-native';
 // import { getShuttles } from '../services/FirebaseService';
 
 const HomeScreen = () => {
-  const [shuttles, setShuttles] = useState([]);
+  // const [shuttles, setShuttles] = useState([]);
 
   // useEffect(() => {
   //   try {
