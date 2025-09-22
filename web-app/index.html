@@ -7,17 +7,22 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" href="assets/favicon.png">
+    <!-- Added for confetti effect -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
     <header>
-        <img src="assets/icon.png" alt="SEMOTrackIt Logo" class="logo">
+        <img src="assets/Southeast_Missouri_State_Redhawks_logo.svg.png" alt="SEMOTrackIt Logo" class="logo">
         <h1>SEMOTrackIt</h1>
         <p>Real-time shuttle tracking for Southeast Missouri State University</p>
+        <p>Proudly created by SEMO students for SEMO students</p>
+        <!-- Added shuttle icon animation -->
+        <div class="shuttle-icon">🚐</div>
     </header>
 
     <nav>
-        <button id="loginBtn">Login</button>
-        <button id="logoutBtn" style="display:none;">Logout</button>
+        <button id="loginBtn" class="fun-btn">Login</button>
+        <button id="logoutBtn" class="fun-btn" style="display:none;">Logout</button>
         <span id="userInfo"></span>
     </nav>
 
@@ -35,7 +40,7 @@
         <section id="searchSection">
             <h2>Search Routes/Stops</h2>
             <input type="text" id="searchInput" placeholder="Enter route or stop name">
-            <button id="searchBtn">Search</button>
+            <button id="searchBtn" class="fun-btn">Search</button>
             <div id="searchResults"></div>
         </section>
     </main>
@@ -52,11 +57,16 @@
             <form id="authForm">
                 <input type="email" id="email" placeholder="Email" required>
                 <input type="password" id="password" placeholder="Password" required>
-                <button type="submit" id="authBtn">Login</button>
+                <button type="submit" id="authBtn" class="fun-btn">Login</button>
                 <button type="button" id="toggleAuth">Need an account? Sign Up</button>
+                <!-- Added spinner for loading -->
+                <div id="spinner" class="spinner" style="display:none;"></div>
             </form>
         </div>
     </div>
+
+    <!-- Toast notifications -->
+    <div id="toastContainer"></div>
 
     <script type="module" src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js"></script>

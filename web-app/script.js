@@ -28,6 +28,16 @@ const shuttlesList = document.getElementById('shuttles');
 const searchInput = document.getElementById('searchInput');
 const searchBtn = document.getElementById('searchBtn');
 const searchResults = document.getElementById('searchResults');
+const spinner = document.getElementById('spinner');
+const toastContainer = document.getElementById('toastContainer');
+
+// Custom shuttle icon for markers
+const shuttleIcon = L.icon({
+    iconUrl: 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><rect x="4" y="8" width="24" height="16" fill="#C8102E" rx="2"/><circle cx="8" cy="20" r="2" fill="#000"/><circle cx="24" cy="20" r="2" fill="#000"/><path d="M12 12 L20 12 L18 16 L14 16 Z" fill="#FFF"/></svg>'),
+    iconSize: [32, 32],
+    iconAnchor: [16, 16],
+    popupAnchor: [0, -16]
+});
 
 // Map initialization
 let map;
@@ -41,6 +51,17 @@ function initMap() {
     }).addTo(map);
 }
 
+// Toast notification function
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    toastContainer.appendChild(toast);
+    setTimeout(() => {
+        toast.remove();
+    }, 3500);
+}
+
 // Authentication
 let isSignUp = false;
 
@@ -50,6 +71,12 @@ auth.onAuthStateChanged((user) => {
         logoutBtn.style.display = 'inline';
         userInfo.textContent = `Welcome, ${user.email}`;
         modal.style.display = 'none';
+        // Confetti on login
+        confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 }
+        });
     } else {
         loginBtn.style.display = 'inline';
         logoutBtn.style.display = 'none';
@@ -63,6 +90,7 @@ loginBtn.addEventListener('click', () => {
 
 logoutBtn.addEventListener('click', () => {
     auth.signOut();
+    showToast('Logged out successfully!', 'info');
 });
 
 document.querySelector('.close').addEventListener('click', () => {
@@ -84,19 +112,24 @@ toggleAuth.addEventListener('click', () => {
 
 authForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    spinner.style.display = 'block';
+    authBtn.disabled = true;
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
     try {
         if (isSignUp) {
             await auth.createUserWithEmailAndPassword(email, password);
-            alert('Account created successfully!');
+            showToast('Account created successfully!', 'success');
         } else {
             await auth.signInWithEmailAndPassword(email, password);
-            alert('Logged in successfully!');
+            showToast('Logged in successfully!', 'success');
         }
     } catch (error) {
-        alert(error.message);
+        showToast(error.message, 'error');
+    } finally {
+        spinner.style.display = 'none';
+        authBtn.disabled = false;
     }
 });
 
@@ -120,13 +153,18 @@ function updateShuttles(data) {
     if (data) {
         Object.keys(data).forEach(key => {
             const shuttle = data[key];
-            const marker = L.marker([shuttle.latitude, shuttle.longitude])
+            const marker = L.marker([shuttle.latitude, shuttle.longitude], { icon: shuttleIcon })
                 .addTo(map)
                 .bindPopup(`Shuttle ${key}<br>Speed: ${shuttle.speed} mph<br>Route: ${shuttle.routeID}`);
+            // Add pulsing class for active shuttles
+            marker._icon.classList.add('pulse');
             markers.push(marker);
 
             const li = document.createElement('li');
-            li.textContent = `Shuttle ${key}: Speed ${shuttle.speed} mph, Route ${shuttle.routeID}`;
+            li.textContent = `🚐 Shuttle ${key}: Speed ${shuttle.speed} mph, Route ${shuttle.routeID}`;
+            li.addEventListener('click', () => {
+                map.setView([shuttle.latitude, shuttle.longitude], 15);
+            });
             shuttlesList.appendChild(li);
         });
     } else {
@@ -137,13 +175,17 @@ function updateShuttles(data) {
         ];
 
         fallbackShuttles.forEach(shuttle => {
-            const marker = L.marker([shuttle.latitude, shuttle.longitude])
+            const marker = L.marker([shuttle.latitude, shuttle.longitude], { icon: shuttleIcon })
                 .addTo(map)
                 .bindPopup(`Shuttle ${shuttle.id}<br>Speed: ${shuttle.speed} mph<br>Route: ${shuttle.routeID}`);
+            marker._icon.classList.add('pulse');
             markers.push(marker);
 
             const li = document.createElement('li');
-            li.textContent = `Shuttle ${shuttle.id}: Speed ${shuttle.speed} mph, Route ${shuttle.routeID}`;
+            li.textContent = `🚐 Shuttle ${shuttle.id}: Speed ${shuttle.speed} mph, Route ${shuttle.routeID}`;
+            li.addEventListener('click', () => {
+                map.setView([shuttle.latitude, shuttle.longitude], 15);
+            });
             shuttlesList.appendChild(li);
         });
     }
@@ -164,14 +206,18 @@ searchBtn.addEventListener('click', () => {
         results.forEach(result => {
             const div = document.createElement('div');
             div.textContent = `${result.type}: ${result.name}`;
-            div.style.cursor = 'pointer';
             div.addEventListener('click', () => {
                 if (result.location) {
                     map.setView(result.location, 15);
                 }
+                showToast(`Viewing ${result.name}`, 'info');
             });
             searchResults.appendChild(div);
         });
+
+        if (results.length === 0) {
+            showToast('No results found', 'error');
+        }
     }
 });
 
