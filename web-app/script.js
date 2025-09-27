@@ -1,3 +1,34 @@
+// Dummy data for PD1 showcase - easily reversible
+const dummyRoutes = {
+    "Main Campus Loop": ["SEMO Campus Center", "Kent Library", "Academic Hall", "Student Union"],
+    "Downtown Connector": ["SEMO Campus Center", "Cape Girardeau Downtown", "Mississippi Riverfront", "Historic District"],
+    "Residential Route": ["SEMO Campus Center", "University Apartments", "Off-Campus Housing", "Shopping Center"]
+};
+
+const dummyStops = [
+    { name: "SEMO Campus Center", lat: 37.3100, lng: -89.5300 },
+    { name: "Kent Library", lat: 37.3080, lng: -89.5280 },
+    { name: "Academic Hall", lat: 37.3120, lng: -89.5320 },
+    { name: "Student Union", lat: 37.3090, lng: -89.5290 },
+    { name: "Cape Girardeau Downtown", lat: 37.3050, lng: -89.5200 },
+    { name: "Mississippi Riverfront", lat: 37.3000, lng: -89.5150 },
+    { name: "Historic District", lat: 37.3030, lng: -89.5180 },
+    { name: "University Apartments", lat: 37.3150, lng: -89.5350 },
+    { name: "Off-Campus Housing", lat: 37.3200, lng: -89.5400 },
+    { name: "Shopping Center", lat: 37.3070, lng: -89.5250 }
+];
+
+const dummyShuttles = [
+    { id: 'Redhawk Express', latitude: 37.3100, longitude: -89.5300, speed: 25, routeID: 'Main Campus Loop' },
+    { id: 'Campus Cruiser', latitude: 37.3050, longitude: -89.5200, speed: 30, routeID: 'Downtown Connector' },
+    { id: 'River Runner', latitude: 37.3150, longitude: -89.5350, speed: 20, routeID: 'Residential Route' }
+];
+
+// Import Firebase modules
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js';
+
 // Firebase configuration
 const firebaseConfig = {
     apiKey: "AIzaSyByIcBoFAxaCedcmt8t9wTLkb9Pd4euMKI",
@@ -11,25 +42,27 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const database = firebase.database();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const database = getDatabase(app);
 
 // DOM elements
 const loginBtn = document.getElementById('loginBtn');
 const logoutBtn = document.getElementById('logoutBtn');
 const userInfo = document.getElementById('userInfo');
-const modal = document.getElementById('loginModal');
+const loginPage = document.getElementById('loginPage');
 const authForm = document.getElementById('authForm');
-const modalTitle = document.getElementById('modalTitle');
+const pageTitle = document.getElementById('pageTitle');
 const authBtn = document.getElementById('authBtn');
 const toggleAuth = document.getElementById('toggleAuth');
 const shuttlesList = document.getElementById('shuttles');
-const searchInput = document.getElementById('searchInput');
+const searchSelect = document.getElementById('searchSelect');
 const searchBtn = document.getElementById('searchBtn');
 const searchResults = document.getElementById('searchResults');
 const spinner = document.getElementById('spinner');
 const toastContainer = document.getElementById('toastContainer');
+const getStartedBtn = document.getElementById('getStartedBtn');
+const backBtn = document.getElementById('backBtn');
 
 // Custom shuttle icon for markers
 const shuttleIcon = L.icon({
@@ -44,11 +77,18 @@ let map;
 let markers = [];
 
 function initMap() {
-    map = L.map('map').setView([37.0902, -89.2186], 13); // SEMO coordinates
+    map = L.map('map').setView([37.3100, -89.5300], 14); // Centered on SEMO Campus Center
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
+
+    // Add stop markers for Cape Girardeau sample map
+    dummyStops.forEach(stop => {
+        L.marker([stop.lat, stop.lng])
+            .addTo(map)
+            .bindPopup(`<b>${stop.name}</b><br>Stop Location`);
+    });
 }
 
 // Toast notification function
@@ -65,12 +105,14 @@ function showToast(message, type = 'success') {
 // Authentication
 let isSignUp = false;
 
-auth.onAuthStateChanged((user) => {
+onAuthStateChanged(auth, (user) => {
     if (user) {
         loginBtn.style.display = 'none';
         logoutBtn.style.display = 'inline';
         userInfo.textContent = `Welcome, ${user.email}`;
-        modal.style.display = 'none';
+        loginPage.style.display = 'none';
+        document.querySelector('main').style.display = 'block';
+        document.querySelector('footer').style.display = 'block';
         // Confetti on login
         confetti({
             particleCount: 100,
@@ -85,7 +127,15 @@ auth.onAuthStateChanged((user) => {
 });
 
 loginBtn.addEventListener('click', () => {
-    modal.style.display = 'block';
+    document.querySelector('main').style.display = 'none';
+    document.querySelector('footer').style.display = 'none';
+    loginPage.style.display = 'flex';
+});
+
+backBtn.addEventListener('click', () => {
+    loginPage.style.display = 'none';
+    document.querySelector('main').style.display = 'block';
+    document.querySelector('footer').style.display = 'block';
 });
 
 logoutBtn.addEventListener('click', () => {
@@ -93,21 +143,11 @@ logoutBtn.addEventListener('click', () => {
     showToast('Logged out successfully!', 'info');
 });
 
-document.querySelector('.close').addEventListener('click', () => {
-    modal.style.display = 'none';
-});
-
-window.addEventListener('click', (event) => {
-    if (event.target === modal) {
-        modal.style.display = 'none';
-    }
-});
-
 toggleAuth.addEventListener('click', () => {
     isSignUp = !isSignUp;
-    modalTitle.textContent = isSignUp ? 'Sign Up' : 'Login';
+    pageTitle.textContent = isSignUp ? 'Sign Up for SEMOTrackIt' : 'Welcome to SEMOTrackIt';
     authBtn.textContent = isSignUp ? 'Sign Up' : 'Login';
-    toggleAuth.textContent = isSignUp ? 'Already have an account? Login' : 'Need an account? Sign Up';
+    toggleAuth.textContent = isSignUp ? 'Already have an account? Login' : 'New to SEMOTrackIt? Sign Up';
 });
 
 authForm.addEventListener('submit', async (e) => {
@@ -135,8 +175,8 @@ authForm.addEventListener('submit', async (e) => {
 
 // Real-time shuttle tracking
 function getShuttles() {
-    const shuttlesRef = database.ref('shuttles');
-    shuttlesRef.on('value', (snapshot) => {
+    const shuttlesRef = ref(database, 'shuttles');
+    onValue(shuttlesRef, (snapshot) => {
         const data = snapshot.val();
         updateShuttles(data);
     });
@@ -160,19 +200,27 @@ function updateShuttles(data) {
             marker._icon.classList.add('pulse');
             markers.push(marker);
 
-            const li = document.createElement('li');
-            li.textContent = `🚐 Shuttle ${key}: Speed ${shuttle.speed} mph, Route ${shuttle.routeID}`;
-            li.addEventListener('click', () => {
-                map.setView([shuttle.latitude, shuttle.longitude], 15);
+            // New: Create shuttle card instead of li
+            const card = document.createElement('div');
+            card.className = 'shuttle-card';
+            const progress = Math.floor(Math.random() * 100) + 1; // Random progress 1-100%
+            card.innerHTML = `
+                <h3>🚐 Shuttle ${key}</h3>
+                <p>Speed: ${shuttle.speed} mph</p>
+                <p>Route: ${shuttle.routeID}</p>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: ${progress}%"></div>
+                </div>
+                <p>ETA Progress: ${progress}% to next stop</p>
+            `;
+            card.addEventListener('click', () => {
+                alert("Zooming to shuttle " + key);
             });
-            shuttlesList.appendChild(li);
+            shuttlesList.appendChild(card);
         });
     } else {
-        // Fallback data
-        const fallbackShuttles = [
-            { id: '1', latitude: 37.0902, longitude: -89.2186, speed: 30, routeID: 'route1' },
-            { id: '2', latitude: 37.0950, longitude: -89.2200, speed: 25, routeID: 'route1' }
-        ];
+        // Fallback data - using dummy shuttles for PD1 showcase
+        const fallbackShuttles = dummyShuttles;
 
         fallbackShuttles.forEach(shuttle => {
             const marker = L.marker([shuttle.latitude, shuttle.longitude], { icon: shuttleIcon })
@@ -181,34 +229,62 @@ function updateShuttles(data) {
             marker._icon.classList.add('pulse');
             markers.push(marker);
 
-            const li = document.createElement('li');
-            li.textContent = `🚐 Shuttle ${shuttle.id}: Speed ${shuttle.speed} mph, Route ${shuttle.routeID}`;
-            li.addEventListener('click', () => {
-                map.setView([shuttle.latitude, shuttle.longitude], 15);
+            // New: Create shuttle card instead of li
+            const card = document.createElement('div');
+            card.className = 'shuttle-card';
+            const progress = Math.floor(Math.random() * 100) + 1; // Random progress 1-100%
+            card.innerHTML = `
+                <h3>🚐 Shuttle ${shuttle.id}</h3>
+                <p>Speed: ${shuttle.speed} mph</p>
+                <p>Route: ${shuttle.routeID}</p>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: ${progress}%"></div>
+                </div>
+                <p>ETA Progress: ${progress}% to next stop</p>
+            `;
+            card.addEventListener('click', () => {
+                alert("Zooming to shuttle " + shuttle.id);
             });
-            shuttlesList.appendChild(li);
+            shuttlesList.appendChild(card);
         });
     }
 }
 
 // Search functionality
 searchBtn.addEventListener('click', () => {
-    const query = searchInput.value.toLowerCase();
+    const query = searchSelect.value;
     searchResults.innerHTML = '';
 
     if (query) {
-        // Simple search - in a real app, this would query the database
-        const results = [
-            { name: 'Campus Center', type: 'Stop', location: [37.0902, -89.2186] },
-            { name: 'Route 1', type: 'Route', stops: ['Campus Center', 'Library'] }
-        ].filter(item => item.name.toLowerCase().includes(query));
+        let results = [];
+        if (dummyRoutes[query]) {
+            // It's a route
+            results = [{ name: query, type: 'Route', stops: dummyRoutes[query] }];
+        } else {
+            // It's a stop
+            const stop = dummyStops.find(s => s.name === query);
+            if (stop) {
+                results = [{ name: query, type: 'Stop', location: [stop.lat, stop.lng] }];
+            }
+        }
 
         results.forEach(result => {
             const div = document.createElement('div');
-            div.textContent = `${result.type}: ${result.name}`;
+            div.className = 'search-result';
+            if (result.type === 'Route') {
+                div.innerHTML = `<strong>Route:</strong> ${result.name}<br><strong>Stops:</strong> ${result.stops.join(', ')}`;
+            } else {
+                div.innerHTML = `<strong>Stop:</strong> ${result.name}`;
+            }
             div.addEventListener('click', () => {
                 if (result.location) {
-                    map.setView(result.location, 15);
+                    map.setView(result.location, 16);
+                } else if (result.stops) {
+                    // Zoom to first stop of the route
+                    const firstStop = dummyStops.find(s => s.name === result.stops[0]);
+                    if (firstStop) {
+                        map.setView([firstStop.lat, firstStop.lng], 14);
+                    }
                 }
                 showToast(`Viewing ${result.name}`, 'info');
             });
@@ -218,6 +294,8 @@ searchBtn.addEventListener('click', () => {
         if (results.length === 0) {
             showToast('No results found', 'error');
         }
+    } else {
+        showToast('Please select a route or stop', 'error');
     }
 });
 
@@ -225,4 +303,110 @@ searchBtn.addEventListener('click', () => {
 document.addEventListener('DOMContentLoaded', () => {
     initMap();
     getShuttles();
+
+    // Hero button functionality
+    getStartedBtn.addEventListener('click', () => {
+        document.getElementById('mapSection').scrollIntoView({ behavior: 'smooth' });
+        showToast('Explore the shuttle map below!', 'info');
+    });
+
+    // Login navigation
+    loginBtn.addEventListener('click', () => {
+        document.querySelector('main').style.display = 'none';
+        document.querySelector('footer').style.display = 'none';
+        loginPage.style.display = 'block';
+    });
+
+    backBtn.addEventListener('click', () => {
+        loginPage.style.display = 'none';
+        document.querySelector('main').style.display = 'block';
+        document.querySelector('footer').style.display = 'block';
+    });
+
+    // Logout
+    logoutBtn.addEventListener('click', () => {
+        signOut(auth);
+        showToast('Logged out successfully!', 'info');
+    });
+
+    // Toggle auth mode
+    toggleAuth.addEventListener('click', () => {
+        isSignUp = !isSignUp;
+        pageTitle.textContent = isSignUp ? 'Sign Up for SEMOTrackIt' : 'Welcome to SEMOTrackIt';
+        authBtn.textContent = isSignUp ? 'Sign Up' : 'Login';
+        toggleAuth.textContent = isSignUp ? 'Already have an account? Login' : 'New to SEMOTrackIt? Sign Up';
+    });
+
+    // Auth form submit
+    authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        spinner.style.display = 'block';
+        authBtn.disabled = true;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+
+        try {
+            if (isSignUp) {
+                await createUserWithEmailAndPassword(auth, email, password);
+                showToast('Account created successfully!', 'success');
+            } else {
+                await signInWithEmailAndPassword(auth, email, password);
+                showToast('Logged in successfully!', 'success');
+            }
+        } catch (error) {
+            showToast(error.message, 'error');
+        } finally {
+            spinner.style.display = 'none';
+            authBtn.disabled = false;
+        }
+    });
+
+    // Search functionality
+    searchBtn.addEventListener('click', () => {
+        const query = searchSelect.value;
+        searchResults.innerHTML = '';
+
+        if (query) {
+            let results = [];
+            if (dummyRoutes[query]) {
+                // It's a route
+                results = [{ name: query, type: 'Route', stops: dummyRoutes[query] }];
+            } else {
+                // It's a stop
+                const stop = dummyStops.find(s => s.name === query);
+                if (stop) {
+                    results = [{ name: query, type: 'Stop', location: [stop.lat, stop.lng] }];
+                }
+            }
+
+            results.forEach(result => {
+                const div = document.createElement('div');
+                div.className = 'search-result';
+                if (result.type === 'Route') {
+                    div.innerHTML = `<strong>Route:</strong> ${result.name}<br><strong>Stops:</strong> ${result.stops.join(', ')}`;
+                } else {
+                    div.innerHTML = `<strong>Stop:</strong> ${result.name}`;
+                }
+                div.addEventListener('click', () => {
+                    if (result.location) {
+                        map.setView(result.location, 16);
+                    } else if (result.stops) {
+                        // Zoom to first stop of the route
+                        const firstStop = dummyStops.find(s => s.name === result.stops[0]);
+                        if (firstStop) {
+                            map.setView([firstStop.lat, firstStop.lng], 14);
+                        }
+                    }
+                    showToast(`Viewing ${result.name}`, 'info');
+                });
+                searchResults.appendChild(div);
+            });
+
+            if (results.length === 0) {
+                showToast('No results found', 'error');
+            }
+        } else {
+            showToast('Please select a route or stop', 'error');
+        }
+    });
 });

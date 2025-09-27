@@ -27,6 +27,12 @@
     </nav>
 
     <main>
+        <section id="heroSection">
+            <h2>Welcome to SEMOTrackIt!</h2>
+            <p>Track shuttles in real-time across Cape Girardeau. Stay connected with your campus community.</p>
+            <button id="getStartedBtn" class="fun-btn">Get Started</button>
+        </section>
+
         <section id="mapSection">
             <h2>Shuttle Map</h2>
             <div id="map"></div>
@@ -34,44 +40,73 @@
 
         <section id="shuttleList">
             <h2>Active Shuttles</h2>
-            <ul id="shuttles"></ul>
+            <div id="shuttles"></div>
         </section>
 
         <section id="searchSection">
             <h2>Search Routes/Stops</h2>
-            <input type="text" id="searchInput" placeholder="Enter route or stop name">
+            <select id="searchSelect">
+                <option value="">Select a Route or Stop</option>
+                <optgroup label="Routes">
+                    <option value="Main Campus Loop">Main Campus Loop</option>
+                    <option value="Downtown Connector">Downtown Connector</option>
+                    <option value="Residential Route">Residential Route</option>
+                </optgroup>
+                <optgroup label="Stops">
+                    <option value="SEMO Campus Center">SEMO Campus Center</option>
+                    <option value="Kent Library">Kent Library</option>
+                    <option value="Academic Hall">Academic Hall</option>
+                    <option value="Student Union">Student Union</option>
+                    <option value="Cape Girardeau Downtown">Cape Girardeau Downtown</option>
+                    <option value="Mississippi Riverfront">Mississippi Riverfront</option>
+                    <option value="Historic District">Historic District</option>
+                    <option value="University Apartments">University Apartments</option>
+                    <option value="Off-Campus Housing">Off-Campus Housing</option>
+                    <option value="Shopping Center">Shopping Center</option>
+                </optgroup>
+            </select>
             <button id="searchBtn" class="fun-btn">Search</button>
             <div id="searchResults"></div>
         </section>
     </main>
 
+    <!-- Login Page -->
+    <div id="loginPage" class="login-page" style="display:none;">
+        <button id="backBtn" class="back-btn">← Back to Main</button>
+        <div class="login-content">
+            <div class="login-header">
+                <img src="assets/Southeast_Missouri_State_Redhawks_logo.svg.png" alt="SEMO Logo" class="login-logo">
+                <h2 id="pageTitle">Welcome to SEMOTrackIt</h2>
+                <p>Login with your SEMO student credentials</p>
+            </div>
+            <form id="authForm">
+                <div class="form-group">
+                    <label for="email">SEMO Email:</label>
+                    <input type="email" id="email" placeholder="yourname@live.semo.edu" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" id="authBtn" class="fun-btn">Login</button>
+                <button type="button" id="toggleAuth">New to SEMOTrackIt? Sign Up</button>
+                <!-- Added spinner for loading -->
+                <div id="spinner" class="spinner" style="display:none;"></div>
+            </form>
+            <div class="login-footer">
+                <p>For demo purposes only. Real authentication coming soon!</p>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>&copy; 2025 SEMOTrackIt Team. Developed for CS445 Software Engineering I.</p>
     </footer>
 
-    <!-- Login Modal -->
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2 id="modalTitle">Login</h2>
-            <form id="authForm">
-                <input type="email" id="email" placeholder="Email" required>
-                <input type="password" id="password" placeholder="Password" required>
-                <button type="submit" id="authBtn" class="fun-btn">Login</button>
-                <button type="button" id="toggleAuth">Need an account? Sign Up</button>
-                <!-- Added spinner for loading -->
-                <div id="spinner" class="spinner" style="display:none;"></div>
-            </form>
-        </div>
-    </div>
-
     <!-- Toast notifications -->
     <div id="toastContainer"></div>
 
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>
