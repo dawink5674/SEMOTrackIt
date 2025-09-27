@@ -310,6 +310,13 @@ document.addEventListener('DOMContentLoaded', () => {
         showToast('Explore the shuttle map below!', 'info');
     });
 
+    // Footer visibility on scroll
+    const footer = document.querySelector('footer');
+    window.addEventListener('scroll', () => {
+        const atBottom = window.scrollY + window.innerHeight >= document.body.scrollHeight - 10;
+        footer.style.opacity = atBottom ? '1' : '0';
+    });
+
     // Login navigation
     loginBtn.addEventListener('click', () => {
         document.querySelector('main').style.display = 'none';

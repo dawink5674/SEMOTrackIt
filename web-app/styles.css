@@ -1,7 +1,7 @@
 body {
     font-family: 'Arial', sans-serif;
     margin: 0;
-    padding: 0 0 50px 0; /* Added padding-bottom to prevent footer overlap */
+    padding: 0 0 70px 0; /* Increased padding-bottom to prevent footer overlap */
     background: linear-gradient(135deg, #f4f4f4 0%, #e0e0e0 100%);
     color: #333;
     cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="%23C8102E"/></svg>') 12 12, auto; /* Shuttle-shaped cursor */
@@ -88,6 +88,10 @@ section {
 
 section:hover {
     transform: translateY(-5px);
+}
+
+#searchSection {
+    margin-bottom: 50px;
 }
 
 #heroSection {
@@ -213,6 +217,10 @@ footer {
     position: fixed;
     bottom: 0;
     width: 100%;
+    height: 50px;
+    box-sizing: border-box;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 
 .modal-content.login-modal {
