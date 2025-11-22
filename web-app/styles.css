@@ -436,6 +436,32 @@ footer {
     color: white;
 }
 
+.ms-login-btn {
+    background: linear-gradient(45deg, #0078D4, #106EBE) !important;
+    box-shadow: 0 4px 12px rgba(0, 120, 212, 0.4);
+}
+
+.ms-login-btn:hover {
+    background: linear-gradient(45deg, #106EBE, #005A9E) !important;
+    transform: scale(1.05);
+}
+
+.shuttle-placeholder {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+  font-style: italic;
+}
+
+.shuttle-placeholder h3 {
+  color: #C8102E;
+  margin-bottom: 10px;
+}
+
+.shuttle-placeholder button {
+  margin-top: 20px;
+}
+
 @media (max-width: 768px) {
     main {
         padding: 0 10px;
